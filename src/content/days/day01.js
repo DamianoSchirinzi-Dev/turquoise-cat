@@ -1,0 +1,76 @@
+// Day config schema (this is the only file content-authoring should ever need to touch
+// for a given day): a background + a linear script of beats. story.js reads this
+// generically — nothing here is Day-1-specific in the engine, only in the data.
+//
+// Script entry types:
+//   { speaker, text, thought? }               — a dialogue line, tap to advance.
+//       Include literal quote marks in `text` for anything said/typed aloud; omit them
+//       and set `thought: true` for internal monologue (shown in italics, no quotes).
+//   { choice: { prompt, options: [{ label, flag?, outcome: [...lines] }] } }
+//   { background: "key" }                     — fades to a different backdrop mid-scene
+//   { card: "text" }                          — a mid-scene time-skip/narration card,
+//       same black-screen treatment as intro/outro (e.g. "the next few days passed...")
+//
+// `background` keys (outdoor, home, cafe, fireside, neutral) are defined in
+// src/ui/backgrounds.js — layered SVG scenes for now, swappable for real illustrated
+// backgrounds later without touching story.js.
+//
+// `intro` / `outro` (both optional): scene-setter cards shown on a black screen before
+// the scene starts / after it ends — same title (from `title` below), tap to skip the hold.
+export default {
+  id: "day01",
+  dayNumber: 1,
+  title: "The First Message",
+  type: "big",
+
+  intro: "An ordinary day — until Boy Kitty gets a message from a girl he's never met.",
+
+  background: "outdoor",
+
+  script: [
+    { speaker: "iliana", text: '"Hey good looking, what are you looking for in that beautiful view?"' },
+    {
+      speaker: "damiano",
+      text: "Whoa. She might be the most beautiful girl I've ever seen — I need to say something charming.",
+      thought: true,
+    },
+    {
+      choice: {
+        prompt: "What does he say?",
+        options: [
+          {
+            label: '"I was looking for you… but I couldn\'t see you."',
+            flag: "day01_smooth",
+            outcome: [
+              { speaker: "damiano", text: '"I was looking for you… but I couldn\'t see you."' },
+              { speaker: "iliana", text: '"Smooth."' },
+            ],
+          },
+          {
+            label: '"Damn, shawty — where\'d you come from?"',
+            flag: "day01_shawty",
+            outcome: [
+              { speaker: "damiano", text: '"Damn, shawty — where\'d you come from?"' },
+              { speaker: "iliana", text: '"Crazy reply… but I\'m here for it."' },
+            ],
+          },
+        ],
+      },
+    },
+    { speaker: "iliana", text: "I like that — he's handsome AND funny.", thought: true },
+    { speaker: "damiano", text: "I need to get to know this girl… she could be the one!", thought: true },
+    {
+      card: "They spent the next few days getting to know each other — life, interests, dreams, where they'd each come from. The more he learned, the more he wanted to know. Boy Kitty had to meet her.",
+    },
+    {
+      speaker: "damiano",
+      text: '"So… I\'d love to take you out on a date. Maybe a climb, then some food?"',
+    },
+    { speaker: "iliana", text: '"Sounds like a plan, sexy man."' },
+    { speaker: "damiano", text: "I want to devour her.", thought: true },
+    { speaker: "iliana", text: "He better devour me.", thought: true },
+  ],
+
+  outro:
+    "The date was set. It was all Boy Kitty could think about, somehow, he just knew: he really wanted this girl.",
+};
