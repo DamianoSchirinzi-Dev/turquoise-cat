@@ -6,10 +6,17 @@
 //   { speaker, text, thought? }               — a dialogue line, tap to advance.
 //       Include literal quote marks in `text` for anything said/typed aloud; omit them
 //       and set `thought: true` for internal monologue (shown in italics, no quotes).
-//   { choice: { prompt, options: [{ label, flag?, outcome: [...lines] }] } }
+//   { choice: { prompt, options: [{ label, flag?, correct?, verdict?, outcome: [...lines] }] } }
+//       If any option carries `correct` (true/false), it's a quiz-style question: picking
+//       flashes the screen green/"Correct!" or red/"Incorrect!"; a wrong pick just re-shows
+//       the same question, a right one continues into that option's `outcome` as normal.
+//       `verdict` overrides the flash's default text per-option (e.g. "Liar.", "You maniac!").
 //   { background: "key" }                     — fades to a different backdrop mid-scene
-//   { card: "text" }                          — a mid-scene time-skip/narration card,
-//       same black-screen treatment as intro/outro (e.g. "the next few days passed...")
+//   { card: "text", background?: "key" }      — a mid-scene time-skip/narration card,
+//       same black-screen treatment as intro/outro (e.g. "the next few days passed...").
+//       Give it `background` too when the card should also change the backdrop — the
+//       swap happens while the screen is black, so the reveal after the card lands
+//       straight on the new scene instead of flashing it first, then cutting to the card.
 //
 // `background` keys (outdoor, home, cafe, fireside, neutral) are defined in
 // src/ui/backgrounds.js — layered SVG scenes for now, swappable for real illustrated

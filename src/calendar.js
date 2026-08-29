@@ -5,6 +5,7 @@ import { DAY_REGISTRY, loadDayConfig } from "./content/days/index.js";
 import { isDayUnlocked, formatUnlockDate } from "./systems/schedule.js";
 import { isDayComplete } from "./systems/gameState.js";
 import { getCharacter } from "./ui/characters.js";
+import { playSelect } from "./systems/sound.js";
 
 const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥" };
 
@@ -82,6 +83,7 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
       statusEl.textContent = `Day ${meta.dayNumber} isn't built yet.`;
       return;
     }
+    playSelect();
     statusEl.textContent = "";
     const config = await loadDayConfig(meta.dayNumber);
     onSelectDay(config);

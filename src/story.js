@@ -6,7 +6,7 @@
 import { getCharacter } from "./ui/characters.js";
 import { getBackground } from "./ui/backgrounds.js";
 import { markDayComplete, setFlag } from "./systems/gameState.js";
-import { playBlip } from "./systems/sound.js";
+import { playBlip, playTap, playCorrect, playIncorrect } from "./systems/sound.js";
 
 const FADE_MS = 450;
 const INTRO_FADE_MS = 600;
@@ -35,6 +35,7 @@ export function playStory(root, config, onFinish) {
         <div class="choice-prompt"></div>
         <div class="choice-options"></div>
       </div>
+      <div class="answer-flash"></div>
       <div class="fade-overlay is-visible"></div>
       <div class="scene-intro">
         <div class="scene-intro-title"></div>
@@ -55,6 +56,7 @@ export function playStory(root, config, onFinish) {
     choiceOverlay: root.querySelector(".choice-overlay"),
     choicePrompt: root.querySelector(".choice-prompt"),
     choiceOptions: root.querySelector(".choice-options"),
+    answerFlash: root.querySelector(".answer-flash"),
     fadeOverlay: root.querySelector(".fade-overlay"),
     sceneIntro: root.querySelector(".scene-intro"),
     sceneIntroTitle: root.querySelector(".scene-intro-title"),
@@ -72,6 +74,7 @@ export function playStory(root, config, onFinish) {
   let index = 0;
   let onAdvanceClick = null;
   let currentTyping = null;
+  let answering = false;
 
   // Reveals `text` into `element` one character at a time with a blip per non-space
   // character. Returns a controller so a tap mid-type can skip straight to full text.
@@ -115,7 +118,16 @@ export function playStory(root, config, onFinish) {
   // Resolves the next time the player taps the scene. No timeout — the reader decides
   // when to move on, same as the dialogue box.
   function waitForTap() {
-    return new Promise((resolve) => root.addEventListener("click", resolve, { once: true }));
+    return new Promise((resolve) =>
+      root.addEventListener(
+        "click",
+        () => {
+          playTap();
+          resolve();
+        },
+        { once: true },
+      ),
+    );
   }
 
   // Scene-setter card (used for the opener, closer, and mid-scene time-skips): title +
@@ -179,25 +191,86 @@ export function playStory(root, config, onFinish) {
     el.choiceOverlay.classList.add("is-visible");
   }
 
-  function chooseOption(opt) {
+  // Flashes the screen green/red with a verdict stamp — "Correct!"/"Incorrect!" by
+  // default, or `message` if the option supplies its own flavor (e.g. "Liar."). Used
+  // for quiz-style choices (options with a `correct` flag); resolves once the flash
+  // has faded back out.
+  function flashAnswer(isCorrect, message) {
+    if (isCorrect) playCorrect();
+    else playIncorrect();
+    return new Promise((resolve) => {
+      el.answerFlash.textContent = message || (isCorrect ? "Correct!" : "Incorrect!");
+      el.answerFlash.classList.remove("is-correct", "is-incorrect");
+      el.answerFlash.classList.add(isCorrect ? "is-correct" : "is-incorrect", "is-visible");
+      setTimeout(() => {
+        el.answerFlash.classList.remove("is-visible");
+        setTimeout(resolve, FADE_MS);
+      }, 900);
+    });
+  }
+
+  async function chooseOption(opt) {
+    if (answering) return;
+    // Quiz-style choices (options carrying `correct`) flash a verdict before continuing;
+    // a wrong pick just re-shows the same question so the player can try again.
+    if (opt.correct !== undefined) {
+      answering = true;
+      await flashAnswer(opt.correct, opt.verdict);
+      answering = false;
+      if (!opt.correct) return;
+    }
     if (opt.flag) setFlag(opt.flag);
     el.choiceOverlay.classList.remove("is-visible");
     if (opt.outcome?.length) queue.splice(index, 0, ...opt.outcome);
     advance();
   }
 
+  // Hides the dialogue box and empties its text so the previous line can't linger
+  // underneath a scene transition and still be sitting there once it fades back in.
+  function clearDialogue() {
+    el.dialogueBox.classList.add("is-hidden");
+    el.dialogueText.textContent = "";
+    el.dialogueNext.classList.remove("is-visible");
+    setSpeaking(null);
+  }
+
   async function changeBackground(key) {
+    clearDialogue();
     await fadeToBlack();
     applyBackground(el.bg, key);
     await fadeFromBlack();
     advance();
   }
 
+  // Plays `firstEntry` and then, for as long as the next queued entry is also a
+  // `{ card }`, keeps consuming and playing those too — all under one continuous black
+  // screen. Assumes the screen is already black; the caller handles fading to/from it.
+  // This is what stops consecutive cards (including the opening intro card followed by
+  // a `{ card }` as the script's first entry) from briefly revealing the live scene
+  // in between — that reveal-then-hide was the "flash" between two back-to-back cards.
+  async function playCardChain(firstEntry) {
+    let entry = firstEntry;
+    while (entry) {
+      if (entry.background) applyBackground(el.bg, entry.background);
+      await playCard(entry.card);
+      const next = queue[index];
+      if (next && next.card) {
+        index += 1;
+        entry = next;
+      } else {
+        entry = null;
+      }
+    }
+  }
+
   // A mid-scene time-skip/narration card — same black-screen treatment as the
   // opener/closer, but inline in the script (e.g. "the next few days passed...").
-  async function showSceneCard(text) {
+  // If an entry also carries `background`, the backdrop swaps while the screen is
+  // still black, so the reveal lands on the new scene directly with no flash first.
+  async function showSceneCard(firstEntry) {
+    clearDialogue();
     await fadeToBlack();
-    await playCard(text);
+    await playCardChain(firstEntry);
     await fadeFromBlack();
     advance();
   }
@@ -212,15 +285,14 @@ export function playStory(root, config, onFinish) {
     index += 1;
     if (entry.speaker) showLine(entry);
     else if (entry.choice) showChoice(entry.choice);
+    else if (entry.card) showSceneCard(entry);
     else if (entry.background) changeBackground(entry.background);
-    else if (entry.card) showSceneCard(entry.card);
     else advance();
   }
 
   async function finish() {
     markDayComplete(config.dayNumber);
-    el.dialogueBox.classList.add("is-hidden");
-    setSpeaking(null);
+    clearDialogue();
     await fadeToBlack();
     await playCard(config.outro);
     onFinish();
@@ -238,7 +310,10 @@ export function playStory(root, config, onFinish) {
   // backgrounded/inactive tab (some mobile browsers do this too), and game logic
   // shouldn't be gated on the page actively repainting.
   setTimeout(async () => {
-    await playCard(config.intro);
+    // The screen starts black already, so no fadeToBlack here — but if the script's
+    // first entry is also a card, chain straight into it (see playCardChain) instead
+    // of revealing the scene after the intro just to hide it again immediately.
+    await playCardChain({ card: config.intro });
     await fadeFromBlack();
     advance();
   }, 20);
