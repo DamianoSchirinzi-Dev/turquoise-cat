@@ -2,12 +2,21 @@
 // days without a config yet (not authored during the content sprint) say so; the
 // rest launch into the story player.
 import { DAY_REGISTRY, loadDayConfig } from "./content/days/index.js";
-import { isDayUnlocked, formatUnlockDate } from "./systems/schedule.js";
+import { isDayUnlocked, formatUnlockDate, formatUnlockDateTime, hasCustomUnlockTime } from "./systems/schedule.js";
 import { isDayComplete } from "./systems/gameState.js";
 import { getCharacter } from "./ui/characters.js";
-import { playSelect } from "./systems/sound.js";
+import { playSelect, playLocked } from "./systems/sound.js";
 
 const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥" };
+
+const SHAKE_KEYFRAMES = [
+  { transform: "translateX(0)" },
+  { transform: "translateX(-8px)" },
+  { transform: "translateX(8px)" },
+  { transform: "translateX(-6px)" },
+  { transform: "translateX(6px)" },
+  { transform: "translateX(0)" },
+];
 
 export function renderCalendar(root, onSelectDay) {
   root.innerHTML = `
@@ -17,36 +26,33 @@ export function renderCalendar(root, onSelectDay) {
         <div class="glow-blob glow-blob--purple"></div>
       </div>
       <h1 class="calendar-title">Our Life</h1>
+      <p class="calendar-next-unlock"></p>
       <div class="calendar-grid"></div>
       <p class="calendar-status"></p>
+      <div class="calendar-kittens">
+        <div class="footer-kitten footer-kitten--damiano"><div class="footer-kitten-art"></div></div>
+        <div class="footer-kitten footer-kitten--iliana"><div class="footer-kitten-art"></div></div>
+      </div>
     </div>
   `;
 
   const grid = root.querySelector(".calendar-grid");
   const status = root.querySelector(".calendar-status");
+  const nextUnlockEl = root.querySelector(".calendar-next-unlock");
+
+  const nextLocked = DAY_REGISTRY.find((meta) => !isDayUnlocked(meta.dayNumber));
+  nextUnlockEl.textContent = nextLocked
+    ? `Next unlock: Day ${nextLocked.dayNumber} — ${formatUnlockDateTime(nextLocked.dayNumber)}`
+    : "";
 
   DAY_REGISTRY.forEach((meta, index) => {
     grid.appendChild(createDayTile(meta, status, onSelectDay, index));
   });
 
-  // A non-interactive "extra tile" dropped into the grid's next open slot (after the
-  // last day) so the two kittens sit exactly where "Day 15" would be.
-  grid.appendChild(createKittenTile(DAY_REGISTRY.length));
-}
-
-function createKittenTile(index) {
-  const tile = document.createElement("div");
-  tile.className = "calendar-kittens";
-  tile.style.animationDelay = `${Math.min(index * 40, 480)}ms`;
-  tile.innerHTML = `
-    <div class="footer-kitten footer-kitten--damiano"><div class="footer-kitten-art"></div></div>
-    <div class="footer-kitten footer-kitten--iliana"><div class="footer-kitten-art"></div></div>
-  `;
-  tile.querySelector(".footer-kitten--damiano .footer-kitten-art").style.backgroundImage =
+  root.querySelector(".footer-kitten--damiano .footer-kitten-art").style.backgroundImage =
     `url(${getCharacter("damiano").image})`;
-  tile.querySelector(".footer-kitten--iliana .footer-kitten-art").style.backgroundImage =
+  root.querySelector(".footer-kitten--iliana .footer-kitten-art").style.backgroundImage =
     `url(${getCharacter("iliana").image})`;
-  return tile;
 }
 
 function createDayTile(meta, statusEl, onSelectDay, index) {
@@ -61,8 +67,11 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
   tile.style.animationDelay = `${Math.min(index * 40, 480)}ms`;
 
   let subtitle = "";
-  if (!unlocked) subtitle = formatUnlockDate(meta.dayNumber);
-  else if (complete) subtitle = "✓ done";
+  if (!unlocked) {
+    subtitle = hasCustomUnlockTime(meta.dayNumber)
+      ? formatUnlockDateTime(meta.dayNumber)
+      : formatUnlockDate(meta.dayNumber);
+  } else if (complete) subtitle = "✓ done";
   else if (!meta.load) subtitle = "soon";
   else subtitle = "play";
 
@@ -76,7 +85,9 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
 
   tile.addEventListener("click", async () => {
     if (!unlocked) {
-      statusEl.textContent = `Day ${meta.dayNumber} unlocks ${formatUnlockDate(meta.dayNumber)}`;
+      playLocked();
+      tile.animate(SHAKE_KEYFRAMES, { duration: 400, easing: "ease" });
+      statusEl.textContent = `This day isn't unlocked yet, it opens ${formatUnlockDateTime(meta.dayNumber)}.`;
       return;
     }
     if (!available) {

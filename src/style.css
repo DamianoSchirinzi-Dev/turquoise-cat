@@ -34,6 +34,100 @@ body {
     env(safe-area-inset-left);
 }
 
+/* ---------- Gate (password screen) ---------- */
+
+.gate-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  background: var(--ink);
+  text-align: center;
+  animation: fade-in 0.4s ease;
+}
+
+.gate-title {
+  color: var(--gold);
+  font-size: clamp(24px, 6vw, 32px);
+  margin: 0;
+}
+
+.gate-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 16px;
+  font-size: 15px;
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.gate-form.is-shaking {
+  animation: gate-shake 0.4s ease;
+}
+
+@keyframes gate-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-6px);
+  }
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+.gate-input {
+  font-family: inherit;
+  font-size: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(244, 201, 93, 0.4);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.gate-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.gate-submit {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--gold);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.gate-error {
+  min-height: 1.2em;
+  color: #ff8a8a;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
 /* ---------- Calendar ---------- */
 
 .calendar-view {
@@ -110,9 +204,19 @@ body {
   z-index: 1;
   color: var(--gold);
   font-size: clamp(22px, 5vw, 30px);
-  margin: 0 0 28px;
+  margin: 0 0 6px;
   text-align: center;
   animation: title-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.calendar-next-unlock {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 24px;
+  color: rgba(244, 201, 93, 0.8);
+  font-size: 13px;
+  text-align: center;
+  min-height: 1.2em;
 }
 
 @keyframes title-pop {
@@ -203,7 +307,14 @@ body {
   color: rgba(244, 201, 93, 0.85);
 }
 
+/* Pinned to the top via absolute positioning (out of the flex flow) so it never
+   pushes the Day-number/subtitle pair down — those two stay vertically centered and
+   aligned the same way on every tile, whether or not this badge is present. */
 .day-tile-badge {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 12px;
   color: rgba(255, 255, 255, 0.5);
 }
@@ -216,10 +327,10 @@ body {
 @keyframes badge-pulse {
   0%,
   100% {
-    transform: scale(1);
+    transform: translateX(-50%) scale(1);
   }
   50% {
-    transform: scale(1.25);
+    transform: translateX(-50%) scale(1.25);
   }
 }
 
@@ -233,23 +344,21 @@ body {
   font-size: 14px;
 }
 
-/* Two tiny idle-animated kittens dropped into the grid's next open slot (see
-   calendar.js), reusing the same sprite-cycle animation/frame data as the story
-   portraits — they sit exactly where the next day tile would go. */
+/* Two idle-animated kittens sitting centered below the calendar grid, reusing the
+   same sprite-cycle animation/frame data as the story portraits. */
 .calendar-kittens {
   position: relative;
-  aspect-ratio: 1;
+  z-index: 1;
   display: flex;
-  align-items: flex-end;
   justify-content: center;
-  gap: 6px;
-  padding: 8px;
+  gap: 14px;
+  margin-top: 12px;
   animation: tile-pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
 
 .footer-kitten {
-  width: 40%;
-  max-width: 52px;
+  width: 30vw;
+  max-width: 120px;
   animation: kitten-bob 2.4s ease-in-out infinite;
 }
 
@@ -516,11 +625,11 @@ body {
 }
 
 .answer-flash.is-correct {
-  background: rgba(56, 176, 96, 0.6);
+  background: rgba(18, 74, 42, 0.92);
 }
 
 .answer-flash.is-incorrect {
-  background: rgba(214, 64, 64, 0.6);
+  background: rgba(96, 20, 20, 0.92);
 }
 
 .fade-overlay {

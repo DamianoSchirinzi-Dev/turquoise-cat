@@ -92,3 +92,12 @@ export function playSelect() {
   osc.start();
   osc.stop(ctx.currentTime + 0.09);
 }
+
+// A low, blunt double-thud for tapping a day that hasn't unlocked yet — a soft "denied"
+// bump, distinct from the buzzy quiz-wrong sound and the bright menu-select chirp.
+export function playLocked() {
+  const ctx = getContext();
+  if (ctx.state === "suspended") ctx.resume();
+  playTone(ctx, 140, 0, 0.12, "sine", 0.09);
+  playTone(ctx, 110, 0.1, 0.16, "sine", 0.08);
+}

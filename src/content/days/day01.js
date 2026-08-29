@@ -47,6 +47,7 @@ export default {
         options: [
           {
             label: '"I was looking for you… but I couldn\'t see you."',
+            correct: true,
             flag: "day01_smooth",
             outcome: [
               { speaker: "damiano", text: '"I was looking for you… but I couldn\'t see you."' },
@@ -55,11 +56,7 @@ export default {
           },
           {
             label: '"Damn, shawty — where\'d you come from?"',
-            flag: "day01_shawty",
-            outcome: [
-              { speaker: "damiano", text: '"Damn, shawty — where\'d you come from?"' },
-              { speaker: "iliana", text: '"Crazy reply… but I\'m here for it."' },
-            ],
+            correct: false,
           },
         ],
       },

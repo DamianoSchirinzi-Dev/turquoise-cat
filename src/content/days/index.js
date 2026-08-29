@@ -18,6 +18,7 @@ export const DAY_REGISTRY = [
   { dayNumber: 12, type: "big", load: () => import("./day12.js") },
   { dayNumber: 13, type: "medium", load: () => import("./day13.js") },
   { dayNumber: 14, type: "finale", load: null },
+  { dayNumber: 15, type: "medium", load: null },
 ];
 
 export function getDayMeta(dayNumber) {
