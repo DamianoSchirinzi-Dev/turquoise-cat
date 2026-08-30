@@ -41,4 +41,6 @@ export default {
   ],
 
   outro: "And that's it. I'll be waiting for you at home, my soulmate. x",
+
+  voiceNote: "assets/recordings/day_15.m4a",
 };

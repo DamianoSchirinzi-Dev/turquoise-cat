@@ -73,4 +73,6 @@ export default {
 
   outro:
     "The pizza was devoured, a first kiss followed — and the rest of the night was all cardio, scratches, and the bedroom floor.",
+
+  voiceNote: "assets/recordings/day_2.m4a",
 };

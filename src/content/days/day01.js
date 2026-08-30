@@ -24,6 +24,12 @@
 //
 // `intro` / `outro` (both optional): scene-setter cards shown on a black screen before
 // the scene starts / after it ends — same title (from `title` below), tap to skip the hold.
+//
+// `voiceNote` (optional): path to a real recorded audio file (e.g.
+// "assets/recordings/day_1.m4a", relative to /public, same convention as character
+// portrait images), played once as the outro card fades in. Mark the day in
+// content/days/index.js with `hasVoiceNote: true` too, so its calendar tile shows the
+// mic icon — that's read from the lightweight registry, not this lazy-loaded file.
 export default {
   id: "day01",
   dayNumber: 1,

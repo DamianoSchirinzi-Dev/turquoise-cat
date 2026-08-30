@@ -3,22 +3,26 @@
 // (3 big, 8 medium, 2 filler, 1 finale). `load` is a dynamic import so days without a
 // config yet don't break anything; add day02.js etc. during the week-2 content sprint
 // and wire its `load` here using the same pattern as day 1.
+// `hasVoiceNote: true` shows the mic icon on that day's calendar tile — set it here
+// (not in the lazy-loaded day file) since the calendar needs it without loading every
+// day's full script up front. The matching dayNN.js still needs its own `voiceNote`
+// field with the actual audio path for playback to work.
 export const DAY_REGISTRY = [
   { dayNumber: 1, type: "big", load: () => import("./day01.js") },
-  { dayNumber: 2, type: "big", load: () => import("./day02.js") },
+  { dayNumber: 2, type: "big", hasVoiceNote: true, load: () => import("./day02.js") },
   { dayNumber: 3, type: "medium", load: () => import("./day03.js") },
   { dayNumber: 4, type: "medium", load: () => import("./day04.js") },
   { dayNumber: 5, type: "medium", load: () => import("./day05.js") },
   { dayNumber: 6, type: "big", load: () => import("./day06.js") },
   { dayNumber: 7, type: "medium", load: () => import("./day07.js") },
-  { dayNumber: 8, type: "medium", load: () => import("./day08.js") },
+  { dayNumber: 8, type: "medium", hasVoiceNote: true, load: () => import("./day08.js") },
   { dayNumber: 9, type: "medium", load: () => import("./day09.js") },
   { dayNumber: 10, type: "medium", load: () => import("./day10.js") },
   { dayNumber: 11, type: "medium", load: () => import("./day11.js") },
   { dayNumber: 12, type: "big", load: () => import("./day12.js") },
   { dayNumber: 13, type: "medium", load: () => import("./day13.js") },
   { dayNumber: 14, type: "finale", load: () => import("./day14.js") },
-  { dayNumber: 15, type: "finale", load: () => import("./day15.js") },
+  { dayNumber: 15, type: "finale", hasVoiceNote: true, load: () => import("./day15.js") },
 ];
 
 export function getDayMeta(dayNumber) {

@@ -82,7 +82,10 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
   tile.innerHTML = `
     <span class="day-tile-number">Day ${meta.dayNumber}</span>
     <span class="day-tile-subtitle">${subtitle}</span>
-    ${badge ? `<span class="day-tile-badge">${badge}</span>` : ""}
+    <span class="day-tile-badges">
+      ${badge ? `<span class="day-tile-badge">${badge}</span>` : ""}
+      ${meta.hasVoiceNote ? `<span class="day-tile-voice" title="Has a voice recording">🎙️</span>` : ""}
+    </span>
   `;
 
   tile.addEventListener("click", async () => {

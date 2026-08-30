@@ -41,4 +41,6 @@ export default {
 
   outro:
     "They hit a rock, right as the captain was, ah, otherwise occupied — with a loud, un-ignorable boom. Luckily, the boat didn't sink, but it was scary for a second there. Scare aside, it was still one of the best birthdays Boy Kitty had ever had.",
+
+  voiceNote: "assets/recordings/day_8.m4a",
 };

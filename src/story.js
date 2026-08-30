@@ -7,6 +7,7 @@ import { getCharacter } from "./ui/characters.js";
 import { getBackground } from "./ui/backgrounds.js";
 import { markDayComplete, setFlag } from "./systems/gameState.js";
 import { playBlip, playTap, playCorrect, playIncorrect, playSplash } from "./systems/sound.js";
+import { playVoiceNote } from "./systems/voice.js";
 
 const FADE_MS = 450;
 const INTRO_FADE_MS = 600;
@@ -48,6 +49,7 @@ export function playStory(root, config, onFinish) {
       </div>
       <div class="fade-overlay is-visible"></div>
       <div class="scene-intro">
+        <div class="scene-intro-portrait"></div>
         <div class="scene-intro-title"></div>
         <div class="scene-intro-text"></div>
         <div class="scene-intro-next">Tap to continue ▼</div>
@@ -70,6 +72,7 @@ export function playStory(root, config, onFinish) {
     splashEffect: root.querySelector(".splash-effect"),
     fadeOverlay: root.querySelector(".fade-overlay"),
     sceneIntro: root.querySelector(".scene-intro"),
+    sceneIntroPortrait: root.querySelector(".scene-intro-portrait"),
     sceneIntroTitle: root.querySelector(".scene-intro-title"),
     sceneIntroText: root.querySelector(".scene-intro-text"),
   };
@@ -78,6 +81,8 @@ export function playStory(root, config, onFinish) {
   const iliana = getCharacter("iliana");
   el.portraitDamiano.querySelector(".portrait-art").style.backgroundImage = `url(${damiano.image})`;
   el.portraitIliana.querySelector(".portrait-art").style.backgroundImage = `url(${iliana.image})`;
+  // Always Boy Kitty specifically, for the centered portrait shown during a voice note.
+  el.sceneIntroPortrait.style.backgroundImage = `url(${damiano.image})`;
 
   const queue = [...config.script];
   let index = 0;
@@ -155,6 +160,22 @@ export function playStory(root, config, onFinish) {
     el.sceneIntroText.textContent = text;
     el.sceneIntro.classList.add("is-visible");
     await wait(INTRO_FADE_MS);
+    await waitForTap();
+    el.sceneIntro.classList.remove("is-visible");
+    await wait(INTRO_FADE_MS);
+  }
+
+  // Same card treatment as playCard, but for a day with a `voiceNote`: Boy Kitty's
+  // portrait shows centered on the card, and input stays frozen (no tap-to-continue
+  // listener attached at all) for as long as the recording is playing — only once it
+  // ends does the card fall back to the normal tap-to-continue behavior.
+  async function playVoiceCard(text, voicePath) {
+    el.sceneIntroTitle.textContent = config.title ?? "";
+    el.sceneIntroText.textContent = text;
+    el.sceneIntro.classList.add("is-visible", "is-listening");
+    await wait(INTRO_FADE_MS);
+    await playVoiceNote(voicePath);
+    el.sceneIntro.classList.remove("is-listening");
     await waitForTap();
     el.sceneIntro.classList.remove("is-visible");
     await wait(INTRO_FADE_MS);
@@ -325,7 +346,11 @@ export function playStory(root, config, onFinish) {
     markDayComplete(config.dayNumber);
     clearDialogue();
     await fadeToBlack();
-    await playCard(config.outro);
+    if (config.voiceNote) {
+      await playVoiceCard(config.outro, config.voiceNote);
+    } else {
+      await playCard(config.outro);
+    }
     onFinish();
   }
 
