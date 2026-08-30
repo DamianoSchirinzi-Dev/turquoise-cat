@@ -101,3 +101,127 @@ export function playLocked() {
   playTone(ctx, 140, 0, 0.12, "sine", 0.09);
   playTone(ctx, 110, 0.1, 0.16, "sine", 0.08);
 }
+
+// A splash — filtered white noise with a falling lowpass cutoff and a quick decay,
+// rather than an oscillator tone, since a splash reads as noise, not a pitch. Played
+// automatically whenever the "water" background is applied (see story.js).
+export function playSplash() {
+  const ctx = getContext();
+  if (ctx.state === "suspended") ctx.resume();
+
+  const duration = 0.35;
+  const bufferSize = Math.round(ctx.sampleRate * duration);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  }
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(2400, ctx.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + duration);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.4, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+  noise.connect(filter).connect(gain).connect(ctx.destination);
+  noise.start();
+  noise.stop(ctx.currentTime + duration + 0.02);
+}
+
+// ---------- Ambient calendar-screen music ----------
+// A cheerful, looping little tune — short plucky major-scale notes (like a music box)
+// over a soft held bass note per phrase, not a slow sustained pad — a minor-key drone
+// read as moody rather than fun, so this leans bright and bouncy instead. Loops
+// seamlessly; kept quiet so it sits behind the UI without fighting the tap/blip sounds.
+const MELODY = [
+  261.63, 329.63, 392.0, 329.63, // C4 E4 G4 E4
+  349.23, 440.0, 392.0, 329.63, // F4 A4 G4 E4
+  392.0, 493.88, 523.25, 440.0, // G4 B4 C5 A4
+  392.0, 349.23, 329.63, 293.66, // G4 F4 E4 D4
+];
+// One bass note per 4-note phrase above (C - F - G - G), held softly underneath.
+const BASS_NOTES = [130.81, 174.61, 196.0, 196.0];
+const NOTE_DURATION = 0.32; // seconds per melody note
+const NOTE_GAP = 0.02; // brief silence between notes so they read as plucks, not legato
+
+let musicBus = null;
+let musicTimer = null;
+let musicNoteIndex = 0;
+let musicRunning = false;
+
+function playMelodyNote(ctx, freq) {
+  const startTime = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const noteGain = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.value = freq;
+  noteGain.gain.setValueAtTime(0.0001, startTime);
+  noteGain.gain.exponentialRampToValueAtTime(0.05, startTime + 0.02);
+  noteGain.gain.exponentialRampToValueAtTime(0.0001, startTime + NOTE_DURATION);
+  osc.connect(noteGain).connect(musicBus);
+  osc.start(startTime);
+  osc.stop(startTime + NOTE_DURATION + 0.05);
+}
+
+function playBassNote(ctx, freq) {
+  const startTime = ctx.currentTime;
+  const duration = (NOTE_DURATION + NOTE_GAP) * 4;
+  const osc = ctx.createOscillator();
+  const noteGain = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.value = freq;
+  noteGain.gain.setValueAtTime(0, startTime);
+  noteGain.gain.linearRampToValueAtTime(0.035, startTime + 0.1);
+  noteGain.gain.setValueAtTime(0.035, startTime + duration - 0.15);
+  noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
+  osc.connect(noteGain).connect(musicBus);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.05);
+}
+
+// Starts the loop if it isn't already running — safe to call repeatedly.
+export function startMusic() {
+  if (musicRunning) return;
+  musicRunning = true;
+
+  const ctx = getContext();
+  if (ctx.state === "suspended") ctx.resume();
+
+  if (!musicBus) {
+    musicBus = ctx.createGain();
+    musicBus.gain.value = 1;
+    musicBus.connect(ctx.destination);
+  } else {
+    musicBus.gain.cancelScheduledValues(ctx.currentTime);
+    musicBus.gain.setValueAtTime(1, ctx.currentTime);
+  }
+
+  const tick = () => {
+    if (!musicRunning) return;
+    if (musicNoteIndex % 4 === 0) playBassNote(ctx, BASS_NOTES[musicNoteIndex / 4]);
+    playMelodyNote(ctx, MELODY[musicNoteIndex]);
+    musicNoteIndex = (musicNoteIndex + 1) % MELODY.length;
+    musicTimer = setTimeout(tick, (NOTE_DURATION + NOTE_GAP) * 1000);
+  };
+  tick();
+}
+
+// Stops scheduling new chords and fades out whatever's currently sounding — safe to
+// call even if the music isn't running.
+export function stopMusic() {
+  if (!musicRunning) return;
+  musicRunning = false;
+  clearTimeout(musicTimer);
+  if (musicBus) {
+    const ctx = getContext();
+    musicBus.gain.cancelScheduledValues(ctx.currentTime);
+    musicBus.gain.setValueAtTime(musicBus.gain.value, ctx.currentTime);
+    musicBus.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
+  }
+}

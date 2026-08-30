@@ -135,6 +135,60 @@ const fireside = WRAP(`
   <rect y="600" width="400" height="100" fill="#2a2230"/>
 `);
 
+const water = WRAP(`
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8fe3e0"/>
+      <stop offset="35%" stop-color="#3fb6c9"/>
+      <stop offset="75%" stop-color="#1c7fa3"/>
+      <stop offset="100%" stop-color="#0d4f6e"/>
+    </linearGradient>
+    <linearGradient id="sunray" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="700" fill="url(#sea)"/>
+  <g fill="url(#sunray)">
+    <polygon points="60,0 140,0 90,700 40,700"/>
+    <polygon points="220,0 300,0 330,700 260,700"/>
+  </g>
+  <g fill="#ffffff">
+    <circle cx="90" cy="560" r="5" opacity="0.6"/>
+    <circle cx="100" cy="500" r="3.5" opacity="0.5"/>
+    <circle cx="80" cy="430" r="4" opacity="0.45"/>
+    <circle cx="95" cy="360" r="3" opacity="0.4"/>
+    <circle cx="300" cy="600" r="6" opacity="0.55"/>
+    <circle cx="310" cy="530" r="4" opacity="0.45"/>
+    <circle cx="295" cy="460" r="3.5" opacity="0.4"/>
+    <circle cx="200" cy="620" r="4.5" opacity="0.5"/>
+    <circle cx="205" cy="550" r="3" opacity="0.4"/>
+  </g>
+  <g fill="#ffd25a" opacity="0.85">
+    <path d="M250,300 q20,-14 34,0 q-14,10 -34,0 z"/>
+    <path d="M284,300 l10,-8 l0,16 z"/>
+  </g>
+  <g fill="#ff8f6b" opacity="0.8">
+    <path d="M130,230 q16,-11 28,0 q-12,8 -28,0 z"/>
+    <path d="M158,230 l8,-7 l0,14 z"/>
+  </g>
+  <path d="M0,630 Q100,600 200,625 T400,610 V700 H0 Z" fill="#e0c88a"/>
+  <path d="M0,650 Q120,630 220,648 T400,640 V700 H0 Z" fill="#d1b877"/>
+  <g fill="none" stroke="#3f8f4f" stroke-width="8" stroke-linecap="round">
+    <path d="M70,650 Q60,600 75,560 Q88,520 72,480"/>
+    <path d="M95,650 Q108,610 92,575 Q80,540 100,505"/>
+  </g>
+  <g fill="#e8613f">
+    <ellipse cx="300" cy="640" rx="22" ry="14"/>
+    <circle cx="286" cy="628" r="4"/>
+    <circle cx="314" cy="628" r="4"/>
+  </g>
+  <g stroke="#e8613f" stroke-width="4" stroke-linecap="round">
+    <path d="M280,636 l-14,-6 M280,644 l-16,2 M320,636 l14,-6 M320,644 l16,2"/>
+    <path d="M292,626 l-6,-10 M308,626 l6,-10"/>
+  </g>
+`);
+
 const neutral = WRAP(`
   <defs>
     <linearGradient id="neutral-bg" x1="0" y1="0" x2="0" y2="1">
@@ -150,7 +204,7 @@ const neutral = WRAP(`
   <rect width="400" height="700" fill="url(#vignette)"/>
 `);
 
-export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral };
+export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral, water };
 
 export function getBackground(key) {
   return BACKGROUNDS[key] ?? BACKGROUNDS.neutral;

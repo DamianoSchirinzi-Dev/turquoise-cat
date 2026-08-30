@@ -6,7 +6,7 @@
 import { getCharacter } from "./ui/characters.js";
 import { getBackground } from "./ui/backgrounds.js";
 import { markDayComplete, setFlag } from "./systems/gameState.js";
-import { playBlip, playTap, playCorrect, playIncorrect } from "./systems/sound.js";
+import { playBlip, playTap, playCorrect, playIncorrect, playSplash } from "./systems/sound.js";
 
 const FADE_MS = 450;
 const INTRO_FADE_MS = 600;
@@ -36,6 +36,16 @@ export function playStory(root, config, onFinish) {
         <div class="choice-options"></div>
       </div>
       <div class="answer-flash"></div>
+      <div class="splash-effect">
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+        <span class="splash-drop"></span>
+      </div>
       <div class="fade-overlay is-visible"></div>
       <div class="scene-intro">
         <div class="scene-intro-title"></div>
@@ -57,6 +67,7 @@ export function playStory(root, config, onFinish) {
     choicePrompt: root.querySelector(".choice-prompt"),
     choiceOptions: root.querySelector(".choice-options"),
     answerFlash: root.querySelector(".answer-flash"),
+    splashEffect: root.querySelector(".splash-effect"),
     fadeOverlay: root.querySelector(".fade-overlay"),
     sceneIntro: root.querySelector(".scene-intro"),
     sceneIntroTitle: root.querySelector(".scene-intro-title"),
@@ -68,13 +79,18 @@ export function playStory(root, config, onFinish) {
   el.portraitDamiano.querySelector(".portrait-art").style.backgroundImage = `url(${damiano.image})`;
   el.portraitIliana.querySelector(".portrait-art").style.backgroundImage = `url(${iliana.image})`;
 
-  applyBackground(el.bg, config.background);
-
   const queue = [...config.script];
   let index = 0;
   let onAdvanceClick = null;
   let currentTyping = null;
   let answering = false;
+  // Set whenever applyBackground runs; consumed by revealBackgroundEffect() once the
+  // fade-from-black after it completes, so a visual effect (e.g. the water splash)
+  // plays when the scene is actually visible, not while it's still hidden behind black.
+  let pendingBackgroundEffect = null;
+
+  applyBackground(el.bg, config.background);
+  pendingBackgroundEffect = config.background;
 
   // Reveals `text` into `element` one character at a time with a blip per non-space
   // character. Returns a controller so a tap mid-type can skip straight to full text.
@@ -158,6 +174,15 @@ export function playStory(root, config, onFinish) {
     });
   }
 
+  // Fires the visual effect (if any) for whichever background was last applied behind
+  // the black screen — call this right after fadeFromBlack() so it plays once the
+  // scene is actually visible, not while it's still hidden.
+  function revealBackgroundEffect() {
+    const key = pendingBackgroundEffect;
+    pendingBackgroundEffect = null;
+    BACKGROUND_EFFECTS[key]?.(el.splashEffect);
+  }
+
   function setSpeaking(speakerKey) {
     el.portraitDamiano.classList.toggle("is-speaking", speakerKey === "damiano");
     el.portraitIliana.classList.toggle("is-speaking", speakerKey === "iliana");
@@ -238,7 +263,9 @@ export function playStory(root, config, onFinish) {
     clearDialogue();
     await fadeToBlack();
     applyBackground(el.bg, key);
+    pendingBackgroundEffect = key;
     await fadeFromBlack();
+    revealBackgroundEffect();
     advance();
   }
 
@@ -251,7 +278,10 @@ export function playStory(root, config, onFinish) {
   async function playCardChain(firstEntry) {
     let entry = firstEntry;
     while (entry) {
-      if (entry.background) applyBackground(el.bg, entry.background);
+      if (entry.background) {
+        applyBackground(el.bg, entry.background);
+        pendingBackgroundEffect = entry.background;
+      }
       await playCard(entry.card);
       const next = queue[index];
       if (next && next.card) {
@@ -272,6 +302,7 @@ export function playStory(root, config, onFinish) {
     await fadeToBlack();
     await playCardChain(firstEntry);
     await fadeFromBlack();
+    revealBackgroundEffect();
     advance();
   }
 
@@ -315,10 +346,31 @@ export function playStory(root, config, onFinish) {
     // of revealing the scene after the intro just to hide it again immediately.
     await playCardChain({ card: config.intro });
     await fadeFromBlack();
+    revealBackgroundEffect();
     advance();
   }, 20);
 }
 
+// Backgrounds that play a one-shot ambient sound the moment they're applied.
+const BACKGROUND_SOUNDS = { water: playSplash };
+
+// Backgrounds that also trigger a one-shot visual effect (see `.splash-effect` in the
+// template) the moment they're applied — a burst of droplet elements toggled via a
+// class, restarted with a forced reflow so it can replay if the background is set again.
+const BACKGROUND_EFFECTS = {
+  water: (splashEl) => {
+    if (!splashEl) return;
+    splashEl.classList.remove("is-active");
+    void splashEl.offsetWidth;
+    splashEl.classList.add("is-active");
+  },
+};
+
+// Applies the background and plays its one-shot ambient sound (if any) immediately —
+// sound is fine to hear while the screen is still black. Any visual effect for this
+// background is deliberately NOT triggered here; see revealBackgroundEffect(), which
+// callers run after the fade back in so it plays while the scene is actually visible.
 function applyBackground(bgEl, key) {
   bgEl.innerHTML = getBackground(key);
+  BACKGROUND_SOUNDS[key]?.();
 }

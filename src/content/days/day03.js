@@ -19,7 +19,7 @@ export default {
             correct: true,
             outcome: [
               {
-                background: "cafe",
+                background: "home",
                 card: "After souvlaki, it was time for dessert — and Nutella was on the menu.",
               },
             ],

@@ -632,6 +632,81 @@ body {
   background: rgba(96, 20, 20, 0.92);
 }
 
+/* A one-shot burst of droplets, played whenever the "water" background is applied
+   (see BACKGROUND_EFFECTS in story.js) — pairs with the splash sound effect. Droplets
+   sit centered on the scene and only animate while `.is-active` is toggled on; the
+   class gets removed and re-added (with a forced reflow) each time to allow replaying. */
+.splash-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.splash-drop {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(173, 230, 255, 0.6) 70%, transparent 100%);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.4);
+}
+
+.splash-effect.is-active .splash-drop {
+  animation: splash-burst 0.6s ease-out forwards;
+}
+
+.splash-drop:nth-child(1) {
+  --dx: -70px;
+  --dy: -50px;
+}
+.splash-drop:nth-child(2) {
+  --dx: 70px;
+  --dy: -50px;
+}
+.splash-drop:nth-child(3) {
+  --dx: -100px;
+  --dy: 6px;
+}
+.splash-drop:nth-child(4) {
+  --dx: 100px;
+  --dy: 6px;
+}
+.splash-drop:nth-child(5) {
+  --dx: -45px;
+  --dy: 55px;
+}
+.splash-drop:nth-child(6) {
+  --dx: 45px;
+  --dy: 55px;
+}
+.splash-drop:nth-child(7) {
+  --dx: 0;
+  --dy: -85px;
+}
+.splash-drop:nth-child(8) {
+  --dx: 0;
+  --dy: 65px;
+}
+
+@keyframes splash-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1);
+  }
+}
+
 .fade-overlay {
   position: absolute;
   inset: 0;

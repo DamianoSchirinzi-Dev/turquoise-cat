@@ -5,7 +5,7 @@ import { DAY_REGISTRY, loadDayConfig } from "./content/days/index.js";
 import { isDayUnlocked, formatUnlockDate, formatUnlockDateTime, hasCustomUnlockTime } from "./systems/schedule.js";
 import { isDayComplete } from "./systems/gameState.js";
 import { getCharacter } from "./ui/characters.js";
-import { playSelect, playLocked } from "./systems/sound.js";
+import { playSelect, playLocked, startMusic, stopMusic } from "./systems/sound.js";
 
 const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥" };
 
@@ -25,7 +25,7 @@ export function renderCalendar(root, onSelectDay) {
         <div class="glow-blob glow-blob--gold"></div>
         <div class="glow-blob glow-blob--purple"></div>
       </div>
-      <h1 class="calendar-title">Our Life</h1>
+      <h1 class="calendar-title">Glimpses of our Life</h1>
       <p class="calendar-next-unlock"></p>
       <div class="calendar-grid"></div>
       <p class="calendar-status"></p>
@@ -53,6 +53,8 @@ export function renderCalendar(root, onSelectDay) {
     `url(${getCharacter("damiano").image})`;
   root.querySelector(".footer-kitten--iliana .footer-kitten-art").style.backgroundImage =
     `url(${getCharacter("iliana").image})`;
+
+  startMusic();
 }
 
 function createDayTile(meta, statusEl, onSelectDay, index) {
@@ -95,6 +97,7 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
       return;
     }
     playSelect();
+    stopMusic();
     statusEl.textContent = "";
     const config = await loadDayConfig(meta.dayNumber);
     onSelectDay(config);

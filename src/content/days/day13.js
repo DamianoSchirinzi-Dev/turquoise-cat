@@ -7,7 +7,7 @@ export default {
   intro:
     "A big day had arrived — the day the Greek, German, and Italian forces would finally meet, for wine and food. A lot was riding on it, but the foundations had already been laid. Nerves ran high — though when it came down to it, everything turned out perfectly.",
 
-  background: "cafe",
+  background: "home",
 
   script: [
     { speaker: "damiano", text: "He rehearses his opening line in the mirror four separate times.", thought: true },
@@ -15,6 +15,7 @@ export default {
     { speaker: "iliana", text: '"You look like you\'re about to give a TED talk."' },
     { speaker: "damiano", text: '"I might be."' },
     {
+      background: "cafe",
       card: "Three languages, three sets of opinions, one small restaurant table — and somehow, within minutes, everyone was talking over each other in the best possible way.",
     },
     {
