@@ -204,7 +204,153 @@ const neutral = WRAP(`
   <rect width="400" height="700" fill="url(#vignette)"/>
 `);
 
-export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral, water };
+const club = WRAP(`
+  <defs>
+    <radialGradient id="club-glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#3a2050" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0d0714" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="beam-pink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff4fd8" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ff4fd8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="beam-cyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4fe9ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#4fe9ff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="beam-purple" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a34fff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#a34fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="700" fill="#0d0714"/>
+  <rect width="400" height="700" fill="url(#club-glow)"/>
+  <g>
+    <polygon points="60,0 140,0 40,700 -60,700" fill="url(#beam-pink)"/>
+    <polygon points="180,0 240,0 260,700 160,700" fill="url(#beam-cyan)"/>
+    <polygon points="300,0 380,0 460,700 340,700" fill="url(#beam-purple)"/>
+  </g>
+  <circle cx="200" cy="60" r="26" fill="#cfd8e6"/>
+  <g stroke="#8892a6" stroke-width="1" opacity="0.6">
+    <line x1="176" y1="46" x2="224" y2="74"/>
+    <line x1="176" y1="74" x2="224" y2="46"/>
+    <line x1="200" y1="34" x2="200" y2="86"/>
+  </g>
+  <g fill="#ffffff" opacity="0.85">
+    <circle cx="90" cy="500" r="3"/>
+    <circle cx="120" cy="540" r="2.5"/>
+    <circle cx="300" cy="520" r="3"/>
+    <circle cx="270" cy="480" r="2"/>
+    <circle cx="200" cy="560" r="2.5"/>
+  </g>
+  <rect y="600" width="400" height="100" fill="#150c22"/>
+  <g fill="#3a2255">
+    <rect x="20" y="560" width="50" height="140"/>
+    <rect x="330" y="560" width="50" height="140"/>
+  </g>
+`);
+
+const cinema = WRAP(`
+  <defs>
+    <linearGradient id="cinema-room" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1420"/>
+      <stop offset="100%" stop-color="#0c0910"/>
+    </linearGradient>
+    <radialGradient id="screen-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#bfe6ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#bfe6ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="700" fill="url(#cinema-room)"/>
+  <circle cx="200" cy="150" r="220" fill="url(#screen-glow)"/>
+  <rect x="60" y="60" width="280" height="160" rx="4" fill="#eaf6ff"/>
+  <rect x="60" y="60" width="280" height="160" rx="4" fill="#89c8e8" opacity="0.35"/>
+  <rect x="50" y="215" width="300" height="10" fill="#2a2230"/>
+  <g fill="#241c2c">
+    <path d="M20,360 L380,360 L400,430 L0,430 Z"/>
+    <path d="M10,440 L390,440 L410,520 L-10,520 Z"/>
+    <path d="M-5,530 L405,530 L430,620 L-30,620 Z"/>
+  </g>
+  <g fill="#3a2f45">
+    <rect x="20" y="350" width="18" height="24" rx="3"/>
+    <rect x="60" y="350" width="18" height="24" rx="3"/>
+    <rect x="322" y="350" width="18" height="24" rx="3"/>
+    <rect x="362" y="350" width="18" height="24" rx="3"/>
+    <rect x="10" y="430" width="20" height="26" rx="3"/>
+    <rect x="370" y="430" width="20" height="26" rx="3"/>
+    <rect x="0" y="520" width="22" height="28" rx="3"/>
+    <rect x="378" y="520" width="22" height="28" rx="3"/>
+  </g>
+  <rect y="640" width="400" height="60" fill="#100a14"/>
+`);
+
+const cabin = WRAP(`
+  <defs>
+    <linearGradient id="cabin-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a6a4a"/>
+      <stop offset="100%" stop-color="#6b4f36"/>
+    </linearGradient>
+    <linearGradient id="cabin-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bfe0e8"/>
+      <stop offset="100%" stop-color="#e8dfc0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="700" fill="url(#cabin-wall)"/>
+  <g opacity="0.5" stroke="#5a4230" stroke-width="2">
+    <line x1="0" y1="120" x2="400" y2="120"/>
+    <line x1="0" y1="240" x2="400" y2="240"/>
+    <line x1="0" y1="360" x2="400" y2="360"/>
+  </g>
+  <rect x="130" y="80" width="140" height="170" rx="70" fill="#3a2a1c"/>
+  <rect x="140" y="90" width="120" height="150" rx="60" fill="url(#cabin-sky)"/>
+  <path d="M140,190 Q200,150 260,190 L260,240 L140,240 Z" fill="#7fae5e" opacity="0.9"/>
+  <path d="M150,240 Q160,200 175,240 Z" fill="#4f7a3c"/>
+  <path d="M225,240 Q245,195 265,240 Z" fill="#4f7a3c"/>
+  <circle cx="235" cy="120" r="18" fill="#fff6c9" opacity="0.9"/>
+  <line x1="200" y1="90" x2="200" y2="240" stroke="#3a2a1c" stroke-width="3"/>
+  <rect y="600" width="400" height="100" fill="#4a3624"/>
+  <rect x="40" y="560" width="90" height="50" rx="6" fill="#c9a877"/>
+  <rect x="40" y="560" width="90" height="10" rx="4" fill="#e9d3a8"/>
+  <path d="M300,600 Q280,520 305,470 Q330,520 310,600 Z" fill="#5c8a52"/>
+  <rect x="285" y="595" width="40" height="26" rx="4" fill="#a15c3f"/>
+  <g fill="#ffe9a8">
+    <circle cx="60" cy="140" r="3"/>
+    <circle cx="90" cy="120" r="3"/>
+    <circle cx="120" cy="150" r="3"/>
+    <circle cx="300" cy="130" r="3"/>
+    <circle cx="330" cy="150" r="3"/>
+  </g>
+`);
+
+const boat = WRAP(`
+  <defs>
+    <linearGradient id="boat-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7fc4e8"/>
+      <stop offset="60%" stop-color="#bfe6d8"/>
+      <stop offset="100%" stop-color="#3a7ca5"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="700" fill="url(#boat-sky)"/>
+  <circle cx="320" cy="110" r="40" fill="#fff6c9" opacity="0.9"/>
+  <path d="M0,330 L60,300 L140,320 L220,290 L300,315 L400,295 L400,400 L0,400 Z" fill="#5c7a8c" opacity="0.55"/>
+  <g fill="#3a5a3c" opacity="0.7">
+    <path d="M20,340 L70,300 L120,340 Z"/>
+    <path d="M260,335 L320,290 L380,335 Z"/>
+  </g>
+  <rect y="400" width="400" height="300" fill="#2f7ba0"/>
+  <g stroke="#5aa3c4" stroke-width="4" opacity="0.5" fill="none">
+    <path d="M0,440 Q50,430 100,440 T200,440 T300,440 T400,440"/>
+    <path d="M0,500 Q50,490 100,500 T200,500 T300,500 T400,500"/>
+    <path d="M0,560 Q50,550 100,560 T200,560 T300,560 T400,560"/>
+  </g>
+  <path d="M60,620 Q200,570 340,620 L320,660 Q200,630 80,660 Z" fill="#8a5c3c"/>
+  <line x1="75" y1="620" x2="75" y2="660" stroke="#6b4328" stroke-width="4"/>
+  <line x1="325" y1="620" x2="325" y2="660" stroke="#6b4328" stroke-width="4"/>
+  <line x1="200" y1="500" x2="200" y2="620" stroke="#6b4328" stroke-width="5"/>
+  <path d="M200,500 L260,610 L200,610 Z" fill="#f5efe0" opacity="0.9"/>
+`);
+
+export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral, water, club, cinema, cabin, boat };
 
 export function getBackground(key) {
   return BACKGROUNDS[key] ?? BACKGROUNDS.neutral;

@@ -19,7 +19,7 @@ export default {
     { speaker: "damiano", text: '"I am walking normal!"' },
     { speaker: "damiano", text: "He is not walking normal.", thought: true },
     {
-      background: "neutral",
+      background: "cinema",
       card: "They made it into the cinema — snacks smuggled, consciences clear — and settled in just as the pre-show ads started.",
     },
     {

@@ -7,7 +7,7 @@ export default {
   intro:
     "It was Boy Kitty's 29th birthday, and Girl Kitty had planned something super special. He was buzzing with excitement — a full long weekend of uninterrupted time together. They were headed to Windermere, where she'd lined up a stack of activities and booked the loveliest Airbnb.",
 
-  background: "fireside",
+  background: "cabin",
 
   script: [
     {
@@ -31,7 +31,7 @@ export default {
       card: "No matter what, she did everything she could to make sure Boy Kitty had the best time away. She kept him relaxed and happy — he appreciated her more than she knew, and felt so lucky to have her.",
     },
     {
-      background: "outdoor",
+      background: "boat",
       card: "Then they got on their rental boat — where more than just sailing happened.",
     },
     { speaker: "damiano", text: '"Babe, we can\'t — not here! We\'ll get caught!"' },

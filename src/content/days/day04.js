@@ -14,7 +14,7 @@ export default {
       card: "He met her friends first, over sushi — nervous, but determined to make a good impression. Girl Kitty was the one, and he wanted everything to be perfect.",
     },
     {
-      background: "neutral",
+      background: "club",
       card: "They arrived at the venue. Girl Kitty emerged from the shadows in a cape and hood — damn, she's sexy, Boy Kitty thought. She ran her lines flawlessly, and then it was their turn together.",
     },
     {
