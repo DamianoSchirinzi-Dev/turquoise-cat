@@ -225,7 +225,6 @@ export function startMusic() {
 // Stops scheduling new notes and fades out whatever's currently sounding — safe to
 // call even if the music isn't running.
 export function stopMusic() {
-  console.log(`[music ${SESSION_TAG}] stopMusic() called, musicRunning was`, musicRunning);
   if (!musicRunning) return;
   musicRunning = false;
   musicGeneration += 1; // invalidates the current tick() closure immediately
