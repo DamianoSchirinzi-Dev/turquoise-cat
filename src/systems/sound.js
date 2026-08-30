@@ -154,6 +154,11 @@ let musicBus = null;
 let musicTimer = null;
 let musicNoteIndex = 0;
 let musicRunning = false;
+// Bumped on every startMusic() call; each tick() closure captures its own value and
+// bails the instant it no longer matches musicGeneration. This is the real guard
+// against two overlapping loops — belt-and-braces alongside musicRunning, in case
+// start/stop ever gets called out of the order this module expects.
+let musicGeneration = 0;
 
 function playMelodyNote(ctx, freq) {
   const startTime = ctx.currentTime;
@@ -185,25 +190,30 @@ function playBassNote(ctx, freq) {
   osc.stop(startTime + duration + 0.05);
 }
 
-// Starts the loop if it isn't already running — safe to call repeatedly.
+// Starts the loop from the beginning. Always safe to call, even if it's already
+// running or mid-fade-out from a very recent stopMusic() — it hard-resets state every
+// time (new generation, fresh bus) so two loops can never end up overlapping, which is
+// what caused notes to "double up" when quickly leaving and returning to the calendar.
 export function startMusic() {
-  if (musicRunning) return;
-  musicRunning = true;
-
   const ctx = getContext();
   if (ctx.state === "suspended") ctx.resume();
 
-  if (!musicBus) {
-    musicBus = ctx.createGain();
-    musicBus.gain.value = 1;
-    musicBus.connect(ctx.destination);
-  } else {
-    musicBus.gain.cancelScheduledValues(ctx.currentTime);
-    musicBus.gain.setValueAtTime(1, ctx.currentTime);
-  }
+  clearTimeout(musicTimer);
+  musicGeneration += 1;
+  const generation = musicGeneration;
+  musicRunning = true;
+  musicNoteIndex = 0;
+
+  // A fresh bus, not a reused one: disconnecting the old one immediately silences any
+  // notes still ringing from a previous generation, instead of leaving them to finish
+  // their natural envelope underneath the new loop.
+  if (musicBus) musicBus.disconnect();
+  musicBus = ctx.createGain();
+  musicBus.gain.value = 1;
+  musicBus.connect(ctx.destination);
 
   const tick = () => {
-    if (!musicRunning) return;
+    if (musicGeneration !== generation) return;
     if (musicNoteIndex % 4 === 0) playBassNote(ctx, BASS_NOTES[musicNoteIndex / 4]);
     playMelodyNote(ctx, MELODY[musicNoteIndex]);
     musicNoteIndex = (musicNoteIndex + 1) % MELODY.length;
@@ -212,11 +222,13 @@ export function startMusic() {
   tick();
 }
 
-// Stops scheduling new chords and fades out whatever's currently sounding — safe to
+// Stops scheduling new notes and fades out whatever's currently sounding — safe to
 // call even if the music isn't running.
 export function stopMusic() {
+  console.log(`[music ${SESSION_TAG}] stopMusic() called, musicRunning was`, musicRunning);
   if (!musicRunning) return;
   musicRunning = false;
+  musicGeneration += 1; // invalidates the current tick() closure immediately
   clearTimeout(musicTimer);
   if (musicBus) {
     const ctx = getContext();
