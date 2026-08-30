@@ -6,6 +6,7 @@ import { isDayUnlocked, formatUnlockDate, formatUnlockDateTime, hasCustomUnlockT
 import { isDayComplete } from "./systems/gameState.js";
 import { getCharacter } from "./ui/characters.js";
 import { playSelect, playLocked, startMusic, stopMusic } from "./systems/sound.js";
+import { unlockVoiceNote } from "./systems/voice.js";
 
 const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥" };
 
@@ -84,7 +85,7 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
     <span class="day-tile-subtitle">${subtitle}</span>
     <span class="day-tile-badges">
       ${badge ? `<span class="day-tile-badge">${badge}</span>` : ""}
-      ${meta.hasVoiceNote ? `<span class="day-tile-voice" title="Has a voice recording">🎙️</span>` : ""}
+      ${meta.voiceNote ? `<span class="day-tile-voice" title="Has a voice recording">🎙️</span>` : ""}
     </span>
   `;
 
@@ -99,6 +100,10 @@ function createDayTile(meta, statusEl, onSelectDay, index) {
       statusEl.textContent = `Day ${meta.dayNumber} isn't built yet.`;
       return;
     }
+    // Unlock the recording for iOS right here, synchronously in the tap handler — by
+    // the time the outro actually wants to play it, minutes from now and behind several
+    // awaited fades, iOS no longer counts it as user-initiated and silently blocks it.
+    if (meta.voiceNote) unlockVoiceNote(meta.voiceNote);
     playSelect();
     stopMusic();
     statusEl.textContent = "";
