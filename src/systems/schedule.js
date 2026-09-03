@@ -5,7 +5,7 @@
 // Day 1 is always unlocked (see isDayUnlocked below) and isn't part of the dated
 // schedule at all — the sequence below starts counting from Day 2, so Day 2 unlocks
 // on TRIP_START_DATE itself, Day 3 the day after, and so on.
-export const TRIP_START_DATE = "2021-09-04"; // TODO: set real trip start date before shipping
+export const TRIP_START_DATE = "2026-09-05"; // TODO: set real trip start date before shipping
 
 export const DAY_COUNT = 15;
 
@@ -16,24 +16,24 @@ export const DAY_COUNT = 15;
 // that day. Day 15's is left active as a placeholder for testing.
 //
 // The trailing date comments are just a reference for the CURRENT TRIP_START_DATE
-// (2026-08-17) — if that date ever changes, these comments won't auto-update, but the
+// (2026-09-05) — if that date ever changes, these comments won't auto-update, but the
 // actual dates used in-app always will (only the time-of-day is hardcoded here). Day 1
 // has no entry since it's always unlocked and never follows this dated sequence.
 const UNLOCK_TIME_OVERRIDES = {
-  // 2: "09:00", // Mon 17 Aug
-  // 3: "09:00", // Tue 18 Aug
-  // 4: "09:00", // Wed 19 Aug
-  // 5: "09:00", // Thu 20 Aug
-  // 6: "09:00", // Fri 21 Aug
-  // 7: "09:00", // Sat 22 Aug
-  // 8: "09:00", // Sun 23 Aug
-  // 9: "09:00", // Mon 24 Aug
-  // 10: "09:00", // Tue 25 Aug
-  // 11: "09:00", // Wed 26 Aug
-  // 12: "09:00", // Thu 27 Aug
-  // 13: "09:00", // Fri 28 Aug
-  14: "09:00", // Sat 29 Aug
-  15: "09:00", // testing — Sun 30 Aug
+  // 2: "09:00", // Sat 5 Sept
+  // 3: "09:00", // Sun 6 Sept
+  // 4: "09:00", // Mon 7 Sept
+  // 5: "09:00", // Tue 8 Sept
+  // 6: "09:00", // Wed 9 Sept
+  // 7: "09:00", // Thu 10 Sept
+  // 8: "09:00", // Fri 11 Sept
+  // 9: "09:00", // Sat 12 Sept
+  // 10: "09:00", // Sun 13 Sept
+  // 11: "09:00", // Mon 14 Sept
+  // 12: "09:00", // Tue 15 Sept
+  // 13: "09:00", // Wed 16 Sept
+  14: "09:00", // Thu 17 Sept
+  15: "09:00", // testing — Fri 18 Sept
 };
 
 function addDays(dateStr, days) {
