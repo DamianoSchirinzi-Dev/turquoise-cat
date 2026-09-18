@@ -28,7 +28,7 @@ export default {
     },
     {
       speaker: "damiano",
-      text: "He loves her more than anything, and misses her more than he lets on.",
+      text: "He loves her more than anything, and misses her more than he can put into words. He can't wait to be back in her arms.",
       thought: true,
     },
     {

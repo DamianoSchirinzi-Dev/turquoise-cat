@@ -25,8 +25,8 @@ export const DAY_REGISTRY = [
   { dayNumber: 13, type: "medium", load: () => import("./day13.js") },
   { dayNumber: 14, type: "finale", load: () => import("./day14.js") },
   { dayNumber: 15, type: "finale", voiceNote: "assets/recordings/day_15.m4a", load: () => import("./day15.js") },
-  // Bonus scene, not part of the dated 15-day trip sequence — always unlocked (see
-  // schedule.js's ALWAYS_UNLOCKED_DAYS) so it's readable any time during the trip.
+  // Bonus scene, not part of the dated 15-day trip sequence — unlocks at its own fixed
+  // moment (see schedule.js's FIXED_UNLOCKS) rather than following TRIP_START_DATE.
   { dayNumber: 16, type: "bonus", load: () => import("./day16.js") },
 ];
 

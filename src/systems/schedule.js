@@ -9,10 +9,17 @@ export const TRIP_START_DATE = "2026-09-05"; // TODO: set real trip start date b
 
 export const DAY_COUNT = 16;
 
-// Days that skip the dated schedule entirely and are always playable — Day 1 (the
-// opener) and any bonus day that isn't part of the trip's day-by-day sequence (e.g.
-// Day 16, "Time Away", meant to be read any time during the trip, not gated behind it).
-const ALWAYS_UNLOCKED_DAYS = new Set([1, 16]);
+// Days that skip the dated schedule entirely and are always playable — currently just
+// Day 1, the opener.
+const ALWAYS_UNLOCKED_DAYS = new Set([1]);
+
+// Bonus days with their own fixed unlock moment, independent of TRIP_START_DATE's
+// day-by-day sequence. Given as a UTC instant so it's exact regardless of the viewer's
+// device timezone — when editing, convert the intended local UK time yourself: the UK
+// is UTC+1 (BST) from late March to late October, UTC+0 the rest of the year.
+const FIXED_UNLOCKS = {
+  16: "2026-09-19T08:00:00Z", // 9:00am BST (UK) on 19 Sept 2026 — "Time Away"
+};
 
 // Optional per-day unlock TIME overrides ("HH:MM", 24h, local time). The unlock DATE
 // still comes from TRIP_START_DATE + dayNumber (see unlockDateForDay below) — an entry
@@ -48,6 +55,7 @@ function addDays(dateStr, days) {
 }
 
 export function unlockDateForDay(dayNumber) {
+  if (dayNumber in FIXED_UNLOCKS) return new Date(FIXED_UNLOCKS[dayNumber]);
   const date = addDays(TRIP_START_DATE, dayNumber - 2);
   const override = UNLOCK_TIME_OVERRIDES[dayNumber];
   if (override) {
@@ -63,7 +71,7 @@ export function isDayUnlocked(dayNumber, now = new Date()) {
 }
 
 export function hasCustomUnlockTime(dayNumber) {
-  return dayNumber in UNLOCK_TIME_OVERRIDES;
+  return dayNumber in UNLOCK_TIME_OVERRIDES || dayNumber in FIXED_UNLOCKS;
 }
 
 export function formatUnlockDate(dayNumber) {
