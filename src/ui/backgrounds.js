@@ -350,7 +350,75 @@ const boat = WRAP(`
   <path d="M200,500 L260,610 L200,610 Z" fill="#f5efe0" opacity="0.9"/>
 `);
 
-export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral, water, club, cinema, cabin, boat };
+const vietnam = WRAP(`
+  <defs>
+    <linearGradient id="viet-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1030"/>
+      <stop offset="60%" stop-color="#3a2050"/>
+      <stop offset="100%" stop-color="#5c3a52"/>
+    </linearGradient>
+    <radialGradient id="viet-moon-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff6d8" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#fff6d8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lantern-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb457" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffb457" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="700" fill="url(#viet-sky)"/>
+  <circle cx="310" cy="110" r="60" fill="url(#viet-moon-glow)"/>
+  <circle cx="310" cy="110" r="24" fill="#fff9e6"/>
+  <g fill="#241830" opacity="0.9">
+    <rect x="0" y="330" width="40" height="180"/>
+    <rect x="45" y="290" width="35" height="220"/>
+    <rect x="85" y="350" width="45" height="160"/>
+    <rect x="135" y="270" width="30" height="240"/>
+    <rect x="170" y="320" width="50" height="190"/>
+    <rect x="225" y="300" width="35" height="210"/>
+    <rect x="265" y="360" width="40" height="150"/>
+    <rect x="310" y="280" width="30" height="230"/>
+    <rect x="345" y="340" width="55" height="170"/>
+  </g>
+  <g fill="#ffd98a" opacity="0.85">
+    <rect x="8" y="360" width="6" height="8"/>
+    <rect x="22" y="400" width="6" height="8"/>
+    <rect x="55" y="330" width="6" height="8"/>
+    <rect x="65" y="380" width="6" height="8"/>
+    <rect x="95" y="390" width="6" height="8"/>
+    <rect x="110" y="420" width="6" height="8"/>
+    <rect x="142" y="310" width="6" height="8"/>
+    <rect x="155" y="360" width="6" height="8"/>
+    <rect x="180" y="350" width="6" height="8"/>
+    <rect x="198" y="400" width="6" height="8"/>
+    <rect x="232" y="330" width="6" height="8"/>
+    <rect x="248" y="380" width="6" height="8"/>
+    <rect x="275" y="390" width="6" height="8"/>
+    <rect x="318" y="310" width="6" height="8"/>
+    <rect x="355" y="370" width="6" height="8"/>
+    <rect x="370" y="410" width="6" height="8"/>
+  </g>
+  <circle cx="70" cy="180" r="30" fill="url(#lantern-glow)"/>
+  <ellipse cx="70" cy="185" rx="14" ry="18" fill="#e05a3f"/>
+  <line x1="70" y1="140" x2="70" y2="167" stroke="#6b4328" stroke-width="2"/>
+  <circle cx="150" cy="150" r="26" fill="url(#lantern-glow)"/>
+  <ellipse cx="150" cy="155" rx="12" ry="16" fill="#e05a3f"/>
+  <line x1="150" y1="115" x2="150" y2="139" stroke="#6b4328" stroke-width="2"/>
+  <rect y="600" width="400" height="100" fill="#241830"/>
+  <rect y="600" width="400" height="10" fill="#1a1024"/>
+  <g stroke="#1a1024" stroke-width="6">
+    <line x1="20" y1="600" x2="20" y2="650"/>
+    <line x1="80" y1="600" x2="80" y2="650"/>
+    <line x1="140" y1="600" x2="140" y2="650"/>
+    <line x1="200" y1="600" x2="200" y2="650"/>
+    <line x1="260" y1="600" x2="260" y2="650"/>
+    <line x1="320" y1="600" x2="320" y2="650"/>
+    <line x1="380" y1="600" x2="380" y2="650"/>
+  </g>
+  <rect y="645" width="400" height="8" fill="#1a1024"/>
+`);
+
+export const BACKGROUNDS = { outdoor, home, cafe, fireside, neutral, water, club, cinema, cabin, boat, vietnam };
 
 export function getBackground(key) {
   return BACKGROUNDS[key] ?? BACKGROUNDS.neutral;

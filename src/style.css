@@ -444,6 +444,16 @@ body {
   pointer-events: none;
 }
 
+/* A `solo` day (see story.js) hides the absent character entirely and centers the one
+   who's actually there, instead of leaving them stranded on one side. */
+.portrait-stage.is-solo {
+  justify-content: center;
+}
+
+.portrait.is-hidden-solo {
+  display: none;
+}
+
 .portrait {
   width: min(40vw, 260px);
   opacity: 0.55;

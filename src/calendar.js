@@ -8,7 +8,7 @@ import { getCharacter } from "./ui/characters.js";
 import { playSelect, playLocked, startMusic, stopMusic } from "./systems/sound.js";
 import { unlockVoiceNote } from "./systems/voice.js";
 
-const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥" };
+const TYPE_BADGE = { big: "★", medium: "", filler: "◦", finale: "♥", bonus: "✈" };
 
 const SHAKE_KEYFRAMES = [
   { transform: "translateX(0)" },

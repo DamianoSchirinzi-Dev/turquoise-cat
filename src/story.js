@@ -84,6 +84,15 @@ export function playStory(root, config, onFinish) {
   // Always Boy Kitty specifically, for the centered portrait shown during a voice note.
   el.sceneIntroPortrait.style.backgroundImage = `url(${damiano.image})`;
 
+  // `solo` (optional): hides the other character's portrait entirely and centers the
+  // remaining one — for a scene where only one of them is actually present (e.g. Boy
+  // Kitty alone on a work trip).
+  if (config.solo === "damiano" || config.solo === "iliana") {
+    const other = config.solo === "damiano" ? el.portraitIliana : el.portraitDamiano;
+    other.classList.add("is-hidden-solo");
+    root.querySelector(".portrait-stage").classList.add("is-solo");
+  }
+
   const queue = [...config.script];
   let index = 0;
   let onAdvanceClick = null;

@@ -18,18 +18,23 @@
 //       swap happens while the screen is black, so the reveal after the card lands
 //       straight on the new scene instead of flashing it first, then cutting to the card.
 //
-// `background` keys (outdoor, home, cafe, fireside, neutral) are defined in
-// src/ui/backgrounds.js — layered SVG scenes for now, swappable for real illustrated
-// backgrounds later without touching story.js.
+// `background` keys (outdoor, home, cafe, fireside, neutral, water, club, cinema,
+// cabin, boat, vietnam) are defined in src/ui/backgrounds.js — layered SVG scenes for
+// now, swappable for real illustrated backgrounds later without touching story.js.
 //
 // `intro` / `outro` (both optional): scene-setter cards shown on a black screen before
 // the scene starts / after it ends — same title (from `title` below), tap to skip the hold.
 //
 // `voiceNote` (optional): path to a real recorded audio file (e.g.
 // "assets/recordings/day_1.m4a", relative to /public, same convention as character
-// portrait images), played once as the outro card fades in. Mark the day in
-// content/days/index.js with `hasVoiceNote: true` too, so its calendar tile shows the
-// mic icon — that's read from the lightweight registry, not this lazy-loaded file.
+// portrait images), played once as the outro card fades in. Add the identical
+// `voiceNote` path to this day's entry in content/days/index.js too, so its calendar
+// tile shows the mic icon and the clip can be "unlocked" for iOS the instant the tile
+// is tapped — both need it before this lazy-loaded file is ever read.
+//
+// `solo` (optional): "damiano" or "iliana" — hides the OTHER character's portrait
+// entirely and centers this one, for a scene where only one of them is present (e.g.
+// Boy Kitty alone on a work trip).
 export default {
   id: "day01",
   dayNumber: 1,

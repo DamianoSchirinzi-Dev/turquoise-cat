@@ -7,7 +7,12 @@
 // on TRIP_START_DATE itself, Day 3 the day after, and so on.
 export const TRIP_START_DATE = "2026-09-05"; // TODO: set real trip start date before shipping
 
-export const DAY_COUNT = 15;
+export const DAY_COUNT = 16;
+
+// Days that skip the dated schedule entirely and are always playable — Day 1 (the
+// opener) and any bonus day that isn't part of the trip's day-by-day sequence (e.g.
+// Day 16, "Time Away", meant to be read any time during the trip, not gated behind it).
+const ALWAYS_UNLOCKED_DAYS = new Set([1, 16]);
 
 // Optional per-day unlock TIME overrides ("HH:MM", 24h, local time). The unlock DATE
 // still comes from TRIP_START_DATE + dayNumber (see unlockDateForDay below) — an entry
@@ -53,7 +58,7 @@ export function unlockDateForDay(dayNumber) {
 }
 
 export function isDayUnlocked(dayNumber, now = new Date()) {
-  if (dayNumber === 1) return true;
+  if (ALWAYS_UNLOCKED_DAYS.has(dayNumber)) return true;
   return now >= unlockDateForDay(dayNumber);
 }
 
